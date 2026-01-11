@@ -95,6 +95,7 @@
         <thead>
           <tr>
             <th>Status</th>
+            <th>Environment</th>
             <th>Certname</th>
             <th>Report</th>
             <th class="collapsing" data-orderable="false"></th>
@@ -110,6 +111,9 @@
               {% else %}
                 {{macros.status_counts(status=node.status, node_name=node.name, events=node.events, unreported_time=node.unreported_time, current_env=current_env)}}
               {% endif %}
+            </td>
+            <td>
+              {{node.catalog_environment}}
             </td>
             <td>
               <a href="{{url_for('node', env=current_env, node_name=node.name)}}">{{ node.name }}</a>
