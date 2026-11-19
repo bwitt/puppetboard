@@ -85,7 +85,12 @@ $(document).ready(function () {
 
   let dataTable = $("#main-table").DataTable()
   $("#main-table-search").on("input", function () {
-    dataTable.search(this.value).draw()
+    // search as a regex, or as plain text if it is not a valid one
+    try {
+      dataTable.search(this.value, true, true).draw()
+    } catch (e) {
+      dataTable.search(this.value, false, true).draw()
+    }
   })
 
   $('#fact-list').factList()
