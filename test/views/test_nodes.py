@@ -1,4 +1,10 @@
+import json
+import time
+from datetime import datetime, timedelta, timezone
+
 from bs4 import BeautifulSoup
+
+from puppetboard import app
 
 
 def test_default_node_view(client, mocker,
@@ -43,3 +49,26 @@ def test_node_view(client, mocker,
 
     vals = soup.find_all('table', {"id": "reports_table"})
     assert len(vals) == 1
+
+
+def test_nodes_unreported_uses_utc(client, mocker, monkeypatch,
+                                   mock_puppetdb_environments,
+                                   mock_puppetdb_default_nodes):
+    monkeypatch.setenv('TZ', 'America/Los_Angeles')
+    time.tzset()
+    try:
+        rv = client.get('/nodes?status=unreported')
+    finally:
+        monkeypatch.undo()
+        time.tzset()
+    assert rv.status_code == 200
+
+    query = mock_puppetdb_default_nodes.call_args.kwargs['query']
+    query = json.loads(str(query))
+    cutoff = datetime.fromisoformat(query[-1][2][2])
+    if cutoff.tzinfo is None:
+        # PuppetDB reads timestamps without an offset as UTC
+        cutoff = cutoff.replace(tzinfo=timezone.utc)
+    expected = datetime.now(timezone.utc) - timedelta(
+        hours=app.app.config['UNRESPONSIVE_HOURS'])
+    assert abs(cutoff - expected) < timedelta(minutes=1)
