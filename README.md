@@ -294,16 +294,19 @@ Other settings that might be interesting, in no particular order:
 - `REFRESH_RATE`: Defaults to `30` the number of seconds to wait until the index page is automatically refreshed.
 - `DEFAULT_ENVIRONMENT`: Defaults to `'production'`, as the name suggests, load all information filtered by this
     environment value, for All Environments use `'*'`.
-- `REPORTS_COUNT`: Defaults to `10` the limit of the number of reports to load on the node or any reports page.
 - `OFFLINE_MODE`: If set to `True` load static assets (jquery, semantic-ui, etc) from the local web server instead
     of a CDN. Defaults to `False`.
 - `DAILY_REPORTS_CHART_ENABLED`: Enable the use of daily chart graphs when looking at dashboard and node view.
 - `DAILY_REPORTS_CHART_DAYS`: Number of days to show history for on the daily report graphs.
 - `DAILY_REPORTS_CHART_MODE`: Default layout of the daily report graphs, `'stacked'` or `'split'`.
 - `DISPLAYED_METRICS`: Metrics to show when displaying node summary. Example: `'resources.total'`, `'events.noop'`.
-- `TABLE_COUNT_SELECTOR`: Configure the dropdown to limit number of hosts to show per page.
-- `LITTLE_TABLE_COUNT`: Default number of reports to show when when looking at a node.
-- `NORMAL_TABLE_COUNT`: Default number of nodes to show when displaying reports and catalog nodes.
+- `TABLE_COUNT_SELECTOR`: The choices in the dropdown to set the number of rows to show per page in the tables.
+    Defaults to `[10, 20, 50, 100, 500]`. `NORMAL_TABLE_COUNT` and `LITTLE_TABLE_COUNT` are always added to it.
+    In the Docker image use a comma-separated list, f.e. `10,50,200`.
+- `LITTLE_TABLE_COUNT`: Default number of rows per page in the tables on the node page (reports and facts).
+    Defaults to `10`.
+- `NORMAL_TABLE_COUNT`: Default number of rows per page in the other tables (reports, inventory, catalogs, facts...).
+    Defaults to `100`. In the Docker image it can be also set with `REPORTS_COUNT` (deprecated).
 - `LOCALISE_TIMESTAMP`: If set to `True` then timestamps are shown using your browser's timezone. Otherwise UTC is used. Defaults to `True`.
 - `WITH_EVENT_NUMBERS`: If set to `True` then Overview and Nodes list shows exact number of changed resources
     in the last report. Otherwise shows only 'some' string if there are resources with given status. Setting this

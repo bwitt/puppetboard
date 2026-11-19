@@ -88,3 +88,15 @@ def test_reports__a_report(client, mocker,
 
     vals = soup.find_all('table', {"id": "events_table"})
     assert len(vals) == 1
+
+
+def test_reports_length_menu_has_default_length(client, mocker,
+                                                mock_puppetdb_environments):
+    mocker.patch.dict(app.app.config, {'TABLE_COUNT_SELECTOR': [50],
+                                       'NORMAL_TABLE_COUNT': 100})
+    rv = client.get('/reports')
+    assert rv.status_code == 200
+
+    page = rv.data.decode('utf-8')
+    assert '"lengthMenu": [50, 100],' in page
+    assert '"pageLength": 100,' in page
