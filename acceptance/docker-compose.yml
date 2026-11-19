@@ -1,0 +1,42 @@
+# Puppetboard, built from this repo, with a real PuppetDB for the acceptance tests.
+# See the "Development" section in the README.
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: puppetdb
+      POSTGRES_PASSWORD: puppetdb
+      POSTGRES_DB: puppetdb
+    volumes:
+      # PuppetDB requires the pg_trgm extension
+      - ./postgres-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "puppetdb"]
+      interval: 2s
+      retries: 30
+
+  puppetdb:
+    image: ghcr.io/voxpupuli/puppetdb:8.8.1-latest
+    environment:
+      # plain HTTP, no certificates from a Puppet Server
+      USE_PUPPETSERVER: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  puppetboard:
+    build: ..
+    environment:
+      PUPPETDB_HOST: puppetdb
+      PUPPETDB_PORT: "8080"
+      PUPPETBOARD_PORT: "8000"
+      SECRET_KEY: acceptance-tests-only
+      ENABLE_CATALOG: "true"
+      ENABLE_CLASS: "true"
+    depends_on:
+      puppetdb:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
