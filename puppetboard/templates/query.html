@@ -81,10 +81,11 @@
   $(document).ready(function() {
     // Function to load preset data into form
     function loadPreset(selectedOption) {
-      const query = selectedOption.data('query');
-      const endpoint = selectedOption.data('endpoint');
-      const rawJson = selectedOption.data('raw-json');
-      const description = selectedOption.data('description');
+      // use attr() as data() converts values like "true" or JSON queries
+      const query = selectedOption.attr('data-query');
+      const endpoint = selectedOption.attr('data-endpoint');
+      const rawJson = selectedOption.attr('data-raw-json');
+      const description = selectedOption.attr('data-description');
 
       if (query) {
         // Populate form fields
