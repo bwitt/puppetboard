@@ -62,6 +62,7 @@ types-toml = "^0.10.8.20240310"
 
 [tool.poetry.group.docker.dependencies]
 gunicorn = ">=23,<28"
+pylibmc = "^1.8.0"
 
 [build-system]
 requires = ["poetry-core"]

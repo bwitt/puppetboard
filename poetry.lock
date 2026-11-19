@@ -400,7 +400,7 @@ description = "Cross-platform colored terminal text."
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 groups = ["test"]
-markers = "platform_system == \"Windows\" or sys_platform == \"win32\""
+markers = "sys_platform == \"win32\" or platform_system == \"Windows\""
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
@@ -1348,6 +1348,45 @@ files = [
 windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
+name = "pylibmc"
+version = "1.8.0"
+description = "Quick and small memcached client for Python"
+optional = false
+python-versions = ">=3.11"
+groups = ["docker"]
+files = [
+    {file = "pylibmc-1.8.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:d66045684ab249e7e4f8ae09af6ed4a5f66daf18f62b061d9be8d52bc74fde38"},
+    {file = "pylibmc-1.8.0-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:2d6b3d90d6edb99a06b75238dd3647f3a148e520a71c7dedc2f334eff4e96c3a"},
+    {file = "pylibmc-1.8.0-cp311-cp311-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:ea705fca85e5f094cb9f2c3028ebb1c521a39de52e60c7e46e5c9a67ad09e92d"},
+    {file = "pylibmc-1.8.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:25ded642e4d149184845df466694f531f94d9af015322c5b3e1a25ae18d4a089"},
+    {file = "pylibmc-1.8.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:b12388c32f789af3e66520a01531deec0923211503074ea803b1cd9cca5a8f7e"},
+    {file = "pylibmc-1.8.0-cp312-cp312-macosx_11_0_x86_64.whl", hash = "sha256:03f532d907aa00129925a3145d638cb362c6f074c5797e09f8941c399ba499a4"},
+    {file = "pylibmc-1.8.0-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:1a098d7d7a0a4f36ea861e1b62d7047c86f26d32c6b29a5fc704718bbbe8d9a0"},
+    {file = "pylibmc-1.8.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:6f640c3dca69ae72aaea0de929e385562c33809969026d82bbf8b85dfc578bab"},
+    {file = "pylibmc-1.8.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:cb3e63da4ec527458503af80e46c520696542e276479e13407707e576e80ad23"},
+    {file = "pylibmc-1.8.0-cp313-cp313-macosx_11_0_x86_64.whl", hash = "sha256:08a9c1d103de4dd7c6e8060e7fc39023e31a73b285acbc9be7fc190202fd7030"},
+    {file = "pylibmc-1.8.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:29bf9265a9cfab02795ac6f5bcb81b1c8044d9f614e004fa843bf8121bda7319"},
+    {file = "pylibmc-1.8.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:981b71b83547f1e49ab2a3a7992f7e0947fa1b8f99db41470126c4b6740696e9"},
+    {file = "pylibmc-1.8.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:93b420bb56666cb33635ef48a9b175131f9107210f5796fcad499b625b30e06a"},
+    {file = "pylibmc-1.8.0-cp314-cp314-macosx_11_0_x86_64.whl", hash = "sha256:b3562a90c529998dd52f5147fe4f0f6116c5064f518149c1de5d8353afa69185"},
+    {file = "pylibmc-1.8.0-cp314-cp314-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:5c3904b1a9823dfb21ec3f17190c20d46668de4d38ef0c41ca5b70eeb6c42f43"},
+    {file = "pylibmc-1.8.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:105ef5afdcd79943e11f4d6f419ac8048a6c0bd7bcec989dad16c59e7c70851c"},
+    {file = "pylibmc-1.8.0-cp315-cp315-macosx_11_0_arm64.whl", hash = "sha256:4dae9cb21664ffbe9e7a7d614a23214c03bd8459b4606333545e859bb4bff372"},
+    {file = "pylibmc-1.8.0-cp315-cp315-macosx_11_0_x86_64.whl", hash = "sha256:f79b5494c3762dedee132a246793433913ade707fa532af296dc7aed70ade6d8"},
+    {file = "pylibmc-1.8.0-cp315-cp315-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:11fa62a27148a8f3ce089b57fbe823ca0c581afb6476d3a2e4c0fe9a508f3414"},
+    {file = "pylibmc-1.8.0-cp315-cp315-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:61907913e17e79246dd4f5c0330373aa322edb52ebbc6363e82e7c4bb8408a59"},
+    {file = "pylibmc-1.8.0-pp311-pypy311_pp73-macosx_11_0_arm64.whl", hash = "sha256:91b0f7dd74e508d6ceb8c879865c0ae2a32f7f2a68d08410499b408967563822"},
+    {file = "pylibmc-1.8.0-pp311-pypy311_pp73-macosx_11_0_x86_64.whl", hash = "sha256:898f5a7c682c486e42ac3b3182f80e1d27b844dd2de9d028cac01632e2f5ded5"},
+    {file = "pylibmc-1.8.0-pp311-pypy311_pp73-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:9fbf90a2b38a834426ae8c929a194ad26612c0e297cd8549a0131f1dbd072e4f"},
+    {file = "pylibmc-1.8.0-pp311-pypy311_pp73-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:143a87cdb22fe2d74bc89a47d6a6a995bca0c19b07f5d3bfcd28d6231e050957"},
+    {file = "pylibmc-1.8.0-pp311-pypy311_pp80-macosx_11_0_arm64.whl", hash = "sha256:2e1708b339c8808c8b53b4dec49440297fb668f356802921d3e8a085f3264787"},
+    {file = "pylibmc-1.8.0-pp311-pypy311_pp80-macosx_11_0_x86_64.whl", hash = "sha256:e38874a4c27163334ac34958b369f16a3598858e8391dd4433215ff2e4ee336e"},
+    {file = "pylibmc-1.8.0-pp311-pypy311_pp80-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:7cdd96c82b78c22e44449400927b45695f906382f5b304c170b9e7886520e3cc"},
+    {file = "pylibmc-1.8.0-pp311-pypy311_pp80-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9332f53da0081ecf3b451b3d865693665b544284ab7c15a6c1bd98dc68a2e6d3"},
+    {file = "pylibmc-1.8.0.tar.gz", hash = "sha256:ca22cce4614930bdf9055435fc561ae96edcedf60498715f1844f6f92c2b0855"},
+]
+
+[[package]]
 name = "pylint"
 version = "4.1.2"
 description = "python code static checker"
@@ -1667,7 +1706,7 @@ version = "4.0"
 description = "A modern CSS selector implementation for Beautiful Soup."
 optional = false
 python-versions = ">=3.11.5"
-groups = ["dev", "test"]
+groups = ["test"]
 files = [
     {file = "soupsieve-4.0-py3-none-any.whl", hash = "sha256:5e7494bfce90e06676cfb4c5c2cf22243e98e5cf24646bb1ecdda46d318550a0"},
     {file = "soupsieve-4.0.tar.gz", hash = "sha256:ccd6470b256394ac44b08b86fd94b30a17d335a5335c8a3d15565f7b03d3c8cf"},
@@ -1857,4 +1896,4 @@ type = ["pytest-mypy (>=1.0.1) ; platform_python_implementation != \"PyPy\""]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "0689a5bbde08c9dc041b9dd09bdcfe54e9b2f2b52db87218bc744cd1e1431772"
+content-hash = "57b806947b9f7fb625fbdcc00872712237ef5b77a0bc75eff29f36a41f990089"
