@@ -1,5 +1,5 @@
 from json import dumps
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, unquote_plus
 
 from flask import (
     request, render_template, url_for, jsonify
@@ -47,6 +47,9 @@ def fact_ajax(env, node, fact, value):
 
     envs = environments()
     check_env(env, envs)
+
+    if value is not None:
+        value = unquote_plus(value)
 
     # Determine if this is a structured fact query
     base_fact = None
@@ -140,9 +143,11 @@ def fact_ajax(env, node, fact, value):
                 # Force quotes around string values
                 # This lets plain int values that are stored as strings in the db
                 # be findable when searched via the facts page
-                value_for_url = '"' + quote_plus(fact_h.value) + '"'
+                value_for_url = '"' + fact_h.value + '"'
             else:
-                value_for_url = fact_h.value
+                value_for_url = str(fact_h.value)
+            # quoted for the slashes, decoded in fact() and fact_ajax()
+            value_for_url = quote_plus(value_for_url)
 
             # Show normal value with link (fast!)
             line.append('["{0}", {1}]'.format(
@@ -415,7 +420,7 @@ def fact(env, fact, value):
 
     value_json = value
     if value is not None:
-        value_object = parse_python(value)
+        value_object = parse_python(unquote_plus(value))
         if type(value_object) is str:
             value_json = value_object
         else:

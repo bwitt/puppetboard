@@ -1,4 +1,7 @@
 import json
+import re
+
+import pytest
 
 from bs4 import BeautifulSoup
 
@@ -654,3 +657,36 @@ def test_facts_page_shows_structured_facts_as_parents(client, mocker,
     hostname_parent = hostname_link.parent
     hostname_toggle = hostname_parent.find('span', {'class': 'fact-toggle'})
     assert hostname_toggle is None
+
+
+@pytest.mark.parametrize('value', ['Ubuntu 22.04 LTS', '/usr/bin:/bin',
+                                   '50%', 'a+b'])
+def test_fact_json_value_link_round_trip(client, mocker,
+                                         mock_puppetdb_environments,
+                                         mock_puppetdb_default_nodes,
+                                         value):
+    query_data = {'facts': [[{
+        'certname': 'node-1',
+        'name': 'some_fact',
+        'value': value,
+        'environment': 'production'
+    }]]}
+    dbquery = MockDbQuery(query_data)
+    mocker.patch.object(app.puppetdb, '_query', side_effect=dbquery.get)
+
+    rv = client.get('/fact/some_fact/json')
+    assert rv.status_code == 200
+    url = json.loads(json.loads(rv.data.decode('utf-8'))['data'][0][1])[0]
+
+    # the fact value page loads its table from the AJAX URL...
+    rv = client.get(url)
+    assert rv.status_code == 200
+    ajax_url = re.search(r'"ajax": "([^"]+)"', rv.data.decode('utf-8')).group(1)
+
+    # ...which must query PuppetDB for the original value
+    facts = mocker.patch.object(app.puppetdb, 'facts', return_value=iter([]))
+    rv = client.get(ajax_url)
+    assert rv.status_code == 200
+    query = facts.call_args.kwargs['query']
+    assert json.loads(str(query)) == ['and', ['=', 'environment', 'production'],
+                                      ['=', 'value', value]]
