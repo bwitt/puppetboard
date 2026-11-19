@@ -1,0 +1,31 @@
+name: tests (acceptance)
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - master
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: 3.13
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-test.txt -r acceptance/requirements.txt
+          playwright install --with-deps chromium
+      - name: Start PuppetDB and Puppetboard
+        run: docker compose -f acceptance/docker-compose.yml up --build --detach --wait --wait-timeout 600
+      - name: Test
+        run: pytest -v acceptance
+      - name: Show logs
+        if: always()
+        run: docker compose -f acceptance/docker-compose.yml logs
+      - name: Stop PuppetDB and Puppetboard
+        if: always()
+        run: docker compose -f acceptance/docker-compose.yml down --volumes

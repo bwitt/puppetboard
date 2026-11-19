@@ -358,6 +358,18 @@ pytest --cov=. --cov-report=xml --strict-markers --mypy puppetboard test
 pylint --errors-only puppetboard test
 ```
 
+The acceptance tests run against Puppetboard, built from your working copy, and a real PuppetDB, both started with
+Docker Compose. They store their test data in PuppetDB before running, so use an empty PuppetDB:
+```bash
+pip install -r acceptance/requirements.txt
+playwright install chromium
+docker compose -f acceptance/docker-compose.yml up --build --detach --wait --wait-timeout 600
+pytest acceptance
+docker compose -f acceptance/docker-compose.yml down --volumes
+```
+Set `PUPPETBOARD_URL` and `PUPPETDB_URL` if they are not available on `http://localhost:8000` and
+`http://localhost:8080`.
+
 And you can run the app by executing:
 
 ```bash
