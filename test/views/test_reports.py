@@ -1,4 +1,5 @@
 import json
+import os
 
 from bs4 import BeautifulSoup
 
@@ -88,3 +89,24 @@ def test_reports__a_report(client, mocker,
 
     vals = soup.find_all('table', {"id": "events_table"})
     assert len(vals) == 1
+
+
+def test_json_report_escapes_values(client, mocker,
+                                    mock_puppetdb_environments,
+                                    mock_puppetdb_default_nodes):
+    data_path = os.path.join(os.path.dirname(__file__), '..', 'data')
+    with open(os.path.join(data_path, 'test_json_report_ok')) as fp:
+        report = json.load(fp)[0]
+    report['configuration_version'] = '<img src=x onerror=alert(1)>'
+    report['certname'] = '<b>node</b>'
+
+    dbquery = MockDbQuery({'reports': [[report]]})
+    mocker.patch.object(app.puppetdb, '_query', side_effect=dbquery.get)
+    app.puppetdb.last_total = 1
+
+    rv = client.get('/reports/json')
+    assert rv.status_code == 200
+
+    line = json.loads(rv.data.decode('utf-8'))['data'][0]
+    assert line[3] == '&lt;img src=x onerror=alert(1)&gt;'
+    assert BeautifulSoup(line[2], 'html.parser').find('a').text == '<b>node</b>'
