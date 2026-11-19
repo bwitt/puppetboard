@@ -13,6 +13,9 @@ log = logging.getLogger(__name__)
 
 
 def url_for_field(field, value):
+    if request.endpoint is None:
+        # no route matched (f.e. when rendering the 404 page)
+        return url_for('index', **{field: value})
     args = request.view_args.copy()
     args.update(request.args.copy())
     args[field] = value

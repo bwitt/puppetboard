@@ -47,6 +47,16 @@ def test_error_not_found(mock_puppetdb_environments):
         assert error_code == 404
 
 
+def test_error_not_found_unmatched_url(client, mock_puppetdb_environments):
+    rv = client.get('/no/such/page/here')
+    assert rv.status_code == 404
+
+    soup = BeautifulSoup(rv.data, 'html.parser')
+    assert 'could not be found in PuppetDB' in soup.p.text
+    env_link = soup.find('input', {'name': 'environment'})
+    assert env_link['value'] == '/'
+
+
 def test_error_precond(mock_puppetdb_environments):
     with app.app.test_request_context():
         (output, error_code) = precond_failed(None)
