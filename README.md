@@ -81,7 +81,10 @@ docker::run { 'puppetboard':
 }
 ```
 
-If you want to have all features enabled, you must use SSL talking to PuppetDB:
+If you want to have all features enabled, you must use SSL talking to PuppetDB.
+
+The app in the container runs as the unprivileged user `appuser` (uid `100`, gid `101`), so the files you mount
+must be readable by it:
 
 ```puppet
 file { '/etc/puppetboard':
@@ -89,13 +92,20 @@ file { '/etc/puppetboard':
 }
 file { '/etc/puppetboard/key.pem':
   ensure => file,
-  mode   => '0644',
+  owner  => '100',
+  group  => '101',
+  mode   => '0640',
   source => "/etc/puppetlabs/puppet/ssl/private_keys/${facts['networking']['fqdn']}.pem",
 }
 file { '/etc/puppetboard/cert.pem':
   ensure => file,
   mode   => '0644',
   source => "/etc/puppetlabs/puppet/ssl/certs/${facts['networking']['fqdn']}.pem",
+}
+file { '/etc/puppetboard/ca.pem':
+  ensure => file,
+  mode   => '0644',
+  source => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
 }
 
 include docker
@@ -110,7 +120,7 @@ docker::run { 'puppetboard':
     'PUPPETDB_PORT=8081',
     'PUPPETBOARD_PORT=8080',
     'ENABLE_CATALOG=true',
-    'PUPPETDB_SSL_VERIFY=false',
+    'PUPPETDB_SSL_VERIFY=/etc/puppetboard/ca.pem',
     'PUPPETDB_KEY=/etc/puppetboard/key.pem',
     'PUPPETDB_CERT=/etc/puppetboard/cert.pem',
     'SECRET_KEY=XXXXXXXX',
@@ -234,9 +244,18 @@ Assuming your webserver and PuppetDB machine are not identical you will at least
 By default PuppetDB requires SSL to be used when a non-local client wants to connect. Therefore you'll also have to
 supply the following settings:
 
--   `PUPPETDB_SSL_VERIFY = True`
--   `PUPPETDB_KEY = /path/to/private/keyfile.pem`
--   `PUPPETDB_CERT = /path/to/public/keyfile.crt`
+-   `PUPPETDB_SSL_VERIFY = '/path/to/ca.pem'`
+-   `PUPPETDB_KEY = '/path/to/private/keyfile.pem'`
+-   `PUPPETDB_CERT = '/path/to/public/keyfile.crt'`
+
+`PUPPETDB_SSL_VERIFY` can be `True` to verify the PuppetDB certificate using the system CA certificates,
+`False` to not verify it (not recommended) or a path to the Puppet CA certificate (`ca.pem`), which is what you
+need with a PuppetDB certificate issued by the Puppet CA.
+In the Docker image you can pass the CA certificate contents in this variable too, like for `PUPPETDB_CERT` below.
+
+With Python 3.13+ the certificate verification is stricter. If it fails with
+`Basic Constraints of CA cert not marked critical`, your Puppet CA certificate was created by an old Puppet version
+that did not mark this extension as critical, and you will need a CA certificate that does.
 
 When using the Puppetboard Docker image, you may also pass Puppetboard it's certificate contents via these environment
 variables, either as a multiline string or pre-base64 encoded. This can be useful where the certificate is stored in a
