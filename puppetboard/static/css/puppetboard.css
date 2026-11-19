@@ -639,11 +639,19 @@ h1.ui.header.no-margin-bottom {
 .ui.select-environment.selection.dropdown .menu {
   background-color: #2e2e32 !important; /* raised level */
   border-color: #48484e !important;
+  /* fit long environment names, growing to the left */
+  width: auto !important;
+  max-width: 90vw;
+  left: auto;
+  right: -1px;
 }
 
 .ui.select-environment.selection.dropdown .menu .item {
   color: #c4c4ca !important;
   border-color: #3c3c40 !important;     /* border level */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ui.select-environment.selection.dropdown .menu .item:hover {
