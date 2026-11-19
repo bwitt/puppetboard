@@ -242,3 +242,15 @@ def test_scheduler_jobs_custom(cleanup_env):
         assert 'trigger' in job
         assert 'seconds' in job
         assert 600 == job['seconds']
+
+
+def test_env_scheduler_jobs_with_spaces(cleanup_env):
+    func = 'puppetboard.schedulers.classes:build_async_cache'
+    os.environ['SCHEDULER_JOBS'] = (
+        f"id, job1, func, {func}, trigger, interval, seconds, 300; "
+        f"id, job2, func, {func}, trigger, interval, seconds, 600;")
+    reload(docker_settings)
+    assert docker_settings.SCHEDULER_JOBS == [
+        {'id': 'job1', 'func': func, 'trigger': 'interval', 'seconds': 300},
+        {'id': 'job2', 'func': func, 'trigger': 'interval', 'seconds': 600},
+    ]

@@ -197,5 +197,11 @@ SCHEDULER_JOBS_STR = os.getenv('SCHEDULER_JOBS', SCHEDULER_JOBS_DEFAULT).split('
 # Take the Array and convert it to a tuple
 SCHEDULER_JOBS = []
 for job in SCHEDULER_JOBS_STR:
-    SCHEDULER_JOBS.append({job.split(',')[i]: (int(job.split(',')[i + 1]) if job.split(',')[i] == 'seconds' else job.split(',')[i + 1])
-                           for i in range(0, len(job.split(',')), 2)})
+    job_items = [x.strip() for x in job.split(',')]
+    if job_items == ['']:
+        # f.e. after a trailing ";"
+        continue
+    SCHEDULER_JOBS.append({
+        job_items[i]: (int(job_items[i + 1]) if job_items[i] == 'seconds'
+                       else job_items[i + 1])
+        for i in range(0, len(job_items), 2)})
