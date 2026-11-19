@@ -60,6 +60,9 @@ docker run -it \
 ```
 Note: you must provide a secret key! Generate one for example by running `ruby -e "require 'securerandom'; puts SecureRandom.hex(32)"`.
 
+The app listens on port `8000` by default, set the `PUPPETBOARD_PORT` env variable to change it.
+The app runs as an unprivileged user, so ports below 1024 may not be available, depending on your container runtime.
+
 Optionally you can set `PUPPETBOARD_URL_PREFIX` env variable to a value like `/puppetboard` to run the app under a URL prefix.
 
 You can use the following Puppet Code to have Puppetboard managed by Puppet:
