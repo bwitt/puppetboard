@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from flask import (
     Response, stream_with_context, request, render_template
@@ -41,7 +41,7 @@ def nodes(env):
     if status_arg in ['failed', 'changed', 'unchanged']:
         query.add(EqualsOperator('latest_report_status', status_arg))
     elif status_arg == 'unreported':
-        unreported = datetime.now()
+        unreported = datetime.now(timezone.utc)
         unreported = (unreported -
                       timedelta(hours=app.config['UNRESPONSIVE_HOURS']))
         unreported = unreported.replace(microsecond=0).isoformat()
