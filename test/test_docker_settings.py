@@ -152,6 +152,21 @@ def test_env_table_selector(cleanup_env):
     assert [5, 15, 25] == docker_settings.TABLE_COUNT_SELECTOR
 
 
+def test_default_table_counts(cleanup_env):
+    assert docker_settings.NORMAL_TABLE_COUNT == 100
+    assert docker_settings.LITTLE_TABLE_COUNT == 10
+
+
+def test_env_normal_table_count(cleanup_env, monkeypatch):
+    monkeypatch.setenv('REPORTS_COUNT', '30')
+    reload(docker_settings)
+    assert docker_settings.NORMAL_TABLE_COUNT == 30
+
+    monkeypatch.setenv('NORMAL_TABLE_COUNT', '40')
+    reload(docker_settings)
+    assert docker_settings.NORMAL_TABLE_COUNT == 40
+
+
 def test_env_column_options(cleanup_env):
     os.environ['DISPLAYED_METRICS'] = 'resources.total, events.failure'
 

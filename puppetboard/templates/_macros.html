@@ -91,7 +91,8 @@
     // Defer rendering out of screen lines (JIT)
     "deferRender": true,
     // Paging options
-    "lengthMenu": {{ length_selector }},
+    // the default length must be in the menu to be shown as selected
+    "lengthMenu": {{ (length_selector + [default_length]) | unique | sort | list }},
     "pageLength": {{ default_length }},
     // Search as regex (does not apply if serverSide)
     "search": {"regex": true},

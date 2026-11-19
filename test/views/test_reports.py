@@ -137,3 +137,15 @@ def test_reports__a_report_escapes_version(client, mocker,
     assert 'javascript:' not in rv.data.decode('utf-8')
     # markdown formatting is still rendered
     assert soup.find('strong').text == 'abc123'
+
+
+def test_reports_length_menu_has_default_length(client, mocker,
+                                                mock_puppetdb_environments):
+    mocker.patch.dict(app.app.config, {'TABLE_COUNT_SELECTOR': [50],
+                                       'NORMAL_TABLE_COUNT': 100})
+    rv = client.get('/reports')
+    assert rv.status_code == 200
+
+    page = rv.data.decode('utf-8')
+    assert '"lengthMenu": [50, 100],' in page
+    assert '"pageLength": 100,' in page
