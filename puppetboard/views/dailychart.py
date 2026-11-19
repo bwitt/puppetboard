@@ -46,7 +46,8 @@ def _iter_dates(days_number, reverse=False):
        previous days.
     """
     one_day = timedelta(days=1)
-    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=UTC())
+    today = datetime.now(UTC()).replace(hour=0, minute=0, second=0,
+                                        microsecond=0)
     days_list = list(today + one_day * (1 - i) for i in range(days_number + 1))
     if reverse:
         days_list.reverse()
