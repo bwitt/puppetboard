@@ -254,8 +254,8 @@ def class_resource_ajax(env, class_name):
         if last_report in reports:
             reports[last_report]['class_status'] = get_status_from_events(reports[last_report]['nb_events_per_status'])
 
-    cached_classes[class_name] = reports
-    cache.set(f'classes_resource_{env_cache_key}', cached_classes)
+    # don't cache this class alone, classes_ajax() expects all the classes
+    # of each cached report
 
     total = len(reports)
 

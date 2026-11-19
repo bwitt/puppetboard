@@ -35,13 +35,16 @@ def build_async_cache():
         query_ex.add_query(query_null)
         query_from.add_query(query_ex)
         query_in.add_query(query_from)
-        reportlist = puppetdb.reports(query=query_in)
+        query.add(query_in)
+        reportlist = puppetdb.reports(query=query)
  
         new_cache = {}
         for report in yield_or_stop(reportlist):
             report_hash = report.hash_
             for event in yield_or_stop(report.events()):
                 containing_class = event.item['class']
+                if containing_class is None:
+                    continue
                 status = event.status
                 new_cache[containing_class] = new_cache.get(containing_class, {})
                 new_cache[containing_class][report_hash] = new_cache[containing_class].get(report_hash, {
