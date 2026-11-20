@@ -85,6 +85,17 @@ def test_fact_value_view(client, mocker,
     assert len(vals) == 0
 
 
+def test_fact_value_view_not_double_escaped(client, mocker,
+                                            mock_puppetdb_environments,
+                                            mock_puppetdb_default_nodes):
+    rv = client.get('/fact/architecture/a<b')
+    assert rv.status_code == 200
+
+    page = rv.data.decode('utf-8')
+    assert 'pretty_print("a\\u003cb")' in page
+    assert 'a&lt;b' not in page
+
+
 def test_fact_value_view_complex(client, mocker,
                                  mock_puppetdb_environments,
                                  mock_puppetdb_default_nodes):
