@@ -2,9 +2,14 @@ import json
 import re
 
 import pytest
+from bs4 import BeautifulSoup
 
 from helpers import (CONFIGURATION_VERSION, FAILURE_MESSAGE, PRODUCTION_NODES,
                      cell_text, link_href, soup)
+
+
+def html_text(html):
+    return BeautifulSoup(html, 'html.parser').get_text()
 
 
 def reports_json(puppetboard, path='/reports/json', **params):
@@ -59,7 +64,7 @@ def test_report(puppetboard):
 
     logs = page_variable(page, 'logs')
     assert [log['level'] for log in logs] == ['err', 'notice']
-    assert FAILURE_MESSAGE in logs[0]['message']
+    assert FAILURE_MESSAGE in html_text(logs[0]['message'])
 
     events = page_variable(page, 'events')
     assert events == [{'resource': 'File[/etc/motd]', 'status': 'failure',
@@ -68,4 +73,4 @@ def test_report(puppetboard):
     # raw error messages
     page = puppetboard.get(report_url + '/raw').text
     logs = page_variable(page, 'logs')
-    assert FAILURE_MESSAGE in logs[0]['message']
+    assert FAILURE_MESSAGE in html_text(logs[0]['message'])
