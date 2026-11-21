@@ -171,6 +171,15 @@ The following is a list of OpenShift parameters that you can pass to the ``oc`` 
 - `PUPPETBOARD_SOURCE_REPOSITORY_URL`: The URL to the Puppetboard repository.  Defaults to 'https://github.com/voxpupuli/puppetboard.git'.
 - `PUPPETBOARD_SOURCE_REPOSITORY_REF`: The branch/tag/ref for Puppetboard.  Defaults to 'master'.
 
+The secret key is stored in a Secret named after `PUPPETBOARD_SERVICE_NAME`, under the `secret-key` key.
+To read it, or to change it and restart Puppetboard:
+
+```bash
+oc extract secret/puppetboard --keys=secret-key --to=-
+oc set data secret/puppetboard secret-key="$(openssl rand -hex 32)"
+oc rollout latest dc/puppetboard
+```
+
 ### From a package
 
 Actively maintained packages:

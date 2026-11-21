@@ -50,6 +50,15 @@ objects:
         kind: "ImageStreamTag"
         name: "${PUPPETBOARD_SERVICE_NAME}:latest"
     successfulBuildsHistoryLimit: 5
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: ${PUPPETBOARD_SERVICE_NAME}
+    labels:
+      app: ${PUPPETBOARD_SERVICE_NAME}
+  type: Opaque
+  stringData:
+    secret-key: ${PUPPETBOARD_SECRET_KEY}
 - kind: "DeploymentConfig"
   apiVersion: "v1"
   metadata:
@@ -75,7 +84,10 @@ objects:
               - name: PUPPETDB_PORT
                 value: ${PUPPETDB_PORT}
               - name: SECRET_KEY
-                value: ${PUPPETBOARD_SECRET_KEY}
+                valueFrom:
+                  secretKeyRef:
+                    name: ${PUPPETBOARD_SERVICE_NAME}
+                    key: secret-key
               - name: PUPPETBOARD_PORT
                 value: ${PUPPETBOARD_PORT}
               - name: UNRESPONSIVE_HOURS
