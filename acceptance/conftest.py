@@ -21,9 +21,10 @@ def puppetdb_data():
         env = run['env']
         when = NOW - run.get('age', timedelta())
         uuids = (str(uuid.uuid4()), str(uuid.uuid4()))
-        submit('replace_facts', 5, facts_command(certname, env, when))
+        xss = run.get('xss', False)
+        submit('replace_facts', 5, facts_command(certname, env, when, xss))
         submit('replace_catalog', 9,
-               catalog_command(certname, env, when, *uuids))
+               catalog_command(certname, env, when, *uuids, xss=xss))
         submit('store_report', 8, report_command(certname, run, when, *uuids))
 
 

@@ -2,7 +2,8 @@
 import pytest
 from playwright.sync_api import sync_playwright
 
-from helpers import PRODUCTION_NODES, PUPPETBOARD_URL, XSS_FACT
+from helpers import (PRODUCTION_NODES, PUPPETBOARD_URL, XSS, XSS_NODE,
+                     link_href)
 
 
 @pytest.fixture(scope='module')
@@ -86,6 +87,51 @@ def test_fact_value_is_escaped(page, path, table):
     browser_page = page.goto(path)
     wait_for_rows(browser_page, table)
 
-    assert browser_page.locator(table, has_text=XSS_FACT).count() == 1
+    assert browser_page.locator(table, has_text=XSS).count() == 1
     assert browser_page.evaluate('window.xss') is None
     assert page.errors == []
+
+
+def assert_not_executed(page, browser_page):
+    assert browser_page.evaluate('window.xss') is None
+    assert page.errors == []
+
+
+@pytest.mark.parametrize('path, table', [
+    ('/xss/reports', '#reports_table'),
+    ('/xss/inventory', '#inventory_table'),
+    ('/xss/fact/kernelrelease', '#facts_table'),
+    (f'/xss/node/{XSS_NODE}', '#facts_table'),
+])
+def test_agent_data_is_escaped_in_tables(page, path, table):
+    browser_page = page.goto(path)
+    wait_for_rows(browser_page, table)
+
+    assert browser_page.locator(table, has_text=XSS).count() == 1
+    assert_not_executed(page, browser_page)
+
+
+@pytest.mark.parametrize('path', [
+    '/xss/failures',
+    '/xss/facts',
+    f'/xss/catalog/{XSS_NODE}',
+])
+def test_agent_data_is_escaped_in_pages(page, path):
+    browser_page = page.goto(path)
+
+    assert XSS in browser_page.inner_text('body')
+    assert_not_executed(page, browser_page)
+
+
+@pytest.mark.parametrize('show_error_as', ['', '/raw'])
+def test_agent_data_is_escaped_in_report(page, puppetboard, show_error_as):
+    row = puppetboard.get_json(f'/xss/reports/{XSS_NODE}/json',
+                               params={'draw': 1, 'start': 0,
+                                       'length': 10})['data'][0]
+    browser_page = page.goto(link_href(row[1]) + show_error_as)
+    wait_for_rows(browser_page, '#logs_table')
+
+    assert XSS in browser_page.inner_text('body')
+    assert browser_page.locator('#logs_table', has_text=XSS).count() == 1
+    assert browser_page.locator('#events_table', has_text=XSS).count() == 1
+    assert_not_executed(page, browser_page)

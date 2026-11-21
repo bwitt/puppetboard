@@ -11,6 +11,10 @@ PUPPETDB_URL = os.getenv('PUPPETDB_URL', 'http://localhost:8080')
 
 NOW = datetime.now(timezone.utc).replace(microsecond=0)
 
+# stored XSS attempt, the browser tests check that it is not executed
+XSS = '<img src=x onerror="window.xss = true">'
+XSS_NODE = 'node-xss.example.com'
+
 # certname -> the run to store for it
 NODES = {
     'node-changed.example.com':
@@ -26,6 +30,9 @@ NODES = {
          'age': timedelta(days=1)},
     'node-staging.example.com':
         {'env': 'staging', 'status': 'changed', 'event': 'success'},
+    # the data that the agent controls is XSS, see test_browser.py
+    XSS_NODE: {'env': 'xss', 'status': 'failed', 'event': 'failure',
+               'xss': True},
 }
 PRODUCTION_NODES = sorted(n for n, d in NODES.items()
                           if d['env'] == 'production')
@@ -37,17 +44,15 @@ MOTD_FILE = ('/etc/puppetlabs/code/environments/production'
              '/modules/profile/manifests/web.pp')
 OS_DESCRIPTION = 'Ubuntu 22.04.4 LTS'
 PATH_FACT = '/usr/local/bin:/usr/bin:/bin'
-# stored XSS attempt, the browser tests check that it is not executed
-XSS_FACT = '<img src=x onerror="window.xss = true">'
 
 
 def timestamp(when):
     return when.isoformat().replace('+00:00', 'Z')
 
 
-def facts_command(certname, env, when):
+def facts_command(certname, env, when, xss=False):
     hostname = certname.split('.')[0]
-    return {
+    command = {
         'certname': certname,
         'environment': env,
         'producer_timestamp': timestamp(when),
@@ -58,7 +63,7 @@ def facts_command(certname, env, when):
             'osfamily': 'Debian',
             'lsbdistdescription': OS_DESCRIPTION,
             'path': PATH_FACT,
-            'banner': XSS_FACT,
+            'banner': XSS,
             'os': {
                 'name': 'Ubuntu',
                 'family': 'Debian',
@@ -80,9 +85,20 @@ def facts_command(certname, env, when):
             },
         },
     }
+    if xss:
+        values = command['values']
+        for name in ['kernelrelease', 'puppetversion', 'lsbdistdescription']:
+            values[name] = XSS
+        values['os']['name'] = XSS
+        values['os']['architecture'] = XSS
+        values[XSS] = 'xss'
+    return command
 
 
-def catalog_command(certname, env, when, transaction_uuid, catalog_uuid):
+def catalog_command(certname, env, when, transaction_uuid, catalog_uuid,
+                    xss=False):
+    motd = XSS if xss else '/etc/motd'
+
     def resource(type_, title, **kwargs):
         return {'type': type_, 'title': title, 'exported': False,
                 'tags': [type_.lower()], 'parameters': {}, **kwargs}
@@ -94,7 +110,7 @@ def catalog_command(certname, env, when, transaction_uuid, catalog_uuid):
 
     return {
         'certname': certname,
-        'version': CONFIGURATION_VERSION,
+        'version': XSS if xss else CONFIGURATION_VERSION,
         'environment': env,
         'transaction_uuid': transaction_uuid,
         'catalog_uuid': catalog_uuid,
@@ -106,18 +122,21 @@ def catalog_command(certname, env, when, transaction_uuid, catalog_uuid):
             resource('Stage', 'main'),
             resource('Class', 'Main'),
             resource('Class', 'Profile::Web'),
-            resource('File', '/etc/motd', file=MOTD_FILE, line=3,
-                     parameters={'ensure': 'file', 'content': 'Hello'}),
+            resource('File', motd, file=MOTD_FILE, line=3,
+                     parameters={'ensure': 'file',
+                                 'content': XSS if xss else 'Hello'}),
         ],
         'edges': [
             contains(('Stage', 'main'), ('Class', 'Main')),
             contains(('Stage', 'main'), ('Class', 'Profile::Web')),
-            contains(('Class', 'Profile::Web'), ('File', '/etc/motd')),
+            contains(('Class', 'Profile::Web'), ('File', motd)),
         ],
     }
 
 
 def report_command(certname, run, when, transaction_uuid, catalog_uuid):
+    xss = run.get('xss', False)
+    motd = XSS if xss else '/etc/motd'
     event_status = run['event']
     events = []
     logs = [{
@@ -131,6 +150,8 @@ def report_command(certname, run, when, transaction_uuid, catalog_uuid):
             'failure': FAILURE_MESSAGE,
             'noop': "current_value 'absent', should be 'file' (noop)",
         }[event_status]
+        if xss:
+            message = XSS + message
         events.append({
             'status': event_status, 'timestamp': timestamp(when),
             'name': 'content_changed', 'property': 'ensure',
@@ -138,10 +159,10 @@ def report_command(certname, run, when, transaction_uuid, catalog_uuid):
             'corrective_change': False, 'message': message,
         })
         logs.insert(0, {
-            'file': MOTD_FILE, 'line': 3,
+            'file': XSS if xss else MOTD_FILE, 'line': 3,
             'level': 'err' if event_status == 'failure' else 'notice',
-            'source': '/Stage[main]/Profile::Web/File[/etc/motd]/ensure',
-            'tags': ['file', 'class', 'profile::web'],
+            'source': f'/Stage[main]/Profile::Web/File[{motd}]/ensure',
+            'tags': ['file', 'class', 'profile::web'] + ([XSS] if xss else []),
             'time': timestamp(when), 'message': message,
         })
 
@@ -165,9 +186,9 @@ def report_command(certname, run, when, transaction_uuid, catalog_uuid):
     return {
         'certname': certname,
         'environment': run['env'],
-        'puppet_version': '8.10.0',
+        'puppet_version': XSS if xss else '8.10.0',
         'report_format': 12,
-        'configuration_version': CONFIGURATION_VERSION,
+        'configuration_version': XSS if xss else CONFIGURATION_VERSION,
         'start_time': timestamp(when - timedelta(seconds=10)),
         'end_time': timestamp(when),
         'producer_timestamp': timestamp(when),
@@ -186,10 +207,10 @@ def report_command(certname, run, when, transaction_uuid, catalog_uuid):
         'metrics': metrics,
         'resources': [{
             'skipped': False, 'timestamp': timestamp(when),
-            'resource_type': 'File', 'resource_title': '/etc/motd',
+            'resource_type': 'File', 'resource_title': motd,
             'file': MOTD_FILE, 'line': 3,
             'containment_path': ['Stage[main]', 'Profile::Web',
-                                 'File[/etc/motd]'],
+                                 f'File[{motd}]'],
             'corrective_change': False, 'events': events,
         }] if events else [],
     }

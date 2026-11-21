@@ -79,7 +79,8 @@ def run_query(puppetboard, query, endpoint='pql', rawjson=False):
 
 
 def test_query_pql(puppetboard):
-    query = 'nodes[certname] { latest_report_status = "failed" }'
+    query = ('nodes[certname] { latest_report_status = "failed"'
+             ' and report_environment = "production" }')
     page = run_query(puppetboard, query).text
 
     rows = json.loads(re.search(r'var data = (.*);', page).group(1))
@@ -87,9 +88,11 @@ def test_query_pql(puppetboard):
 
 
 @pytest.mark.parametrize('endpoint, query', [
-    ('nodes', '["=", "latest_report_status", "failed"]'),
+    ('nodes', '["and", ["=", "latest_report_status", "failed"],'
+              ' ["=", "report_environment", "production"]]'),
     # AST queries are wrapped in [] if needed
-    ('nodes', '"=", "latest_report_status", "failed"'),
+    ('nodes', '"and", ["=", "latest_report_status", "failed"],'
+              ' ["=", "report_environment", "production"]'),
 ])
 def test_query_ast_raw_json(puppetboard, endpoint, query):
     page = run_query(puppetboard, query, endpoint, rawjson=True).text

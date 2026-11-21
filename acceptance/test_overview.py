@@ -43,7 +43,7 @@ def test_overview_all_environments(puppetboard):
     page = soup(puppetboard.get('/*/'))
 
     assert overview_counts(page) == {
-        'failed': 1, 'noop': 1, 'changed': 2, 'unchanged': 1, 'unreported': 1,
+        'failed': 2, 'noop': 1, 'changed': 2, 'unchanged': 1, 'unreported': 1,
     }
     population = int(page.select('h1.ui.darkblue.header')[0].text)
     assert population == len(NODES)
@@ -52,7 +52,7 @@ def test_overview_all_environments(puppetboard):
 @pytest.mark.parametrize('env, expected', [
     ('production', {'failed': 1, 'noop': 1, 'changed': 1, 'unchanged': 1,
                     'unreported': 1}),
-    ('*', {'failed': 1, 'noop': 1, 'changed': 2, 'unchanged': 1,
+    ('*', {'failed': 2, 'noop': 1, 'changed': 2, 'unchanged': 1,
            'unreported': 1}),
 ])
 def test_radiator(puppetboard, env, expected):
