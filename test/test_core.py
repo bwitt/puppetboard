@@ -39,3 +39,17 @@ def test_get_friendly_error(raw_message, friendly_message):
     raw_message = dedent(raw_message)
     friendly_message = dedent(friendly_message).strip()
     assert get_friendly_error("Puppet", raw_message, "foo.bar.com") == friendly_message
+
+
+@pytest.mark.parametrize("certname", [
+    "foo(",
+    "(a*)*b",
+])
+def test_get_friendly_error_certname_is_not_a_regex(certname):
+    raw_message = f"Could not find class ::foo for {certname} in site.pp on node {certname}"
+    assert get_friendly_error("Puppet", raw_message, certname) == \
+        "Could not find class ::foo in site.pp"
+
+    # backtracks catastrophically if the certname is used as a regex
+    raw_message = "Failed on node " + "a" * 40 + "!"
+    assert get_friendly_error("Puppet", raw_message, certname) == raw_message

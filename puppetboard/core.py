@@ -216,10 +216,11 @@ def get_friendly_error(source: str, message: str, certname: str) -> str:
                      r"Error while evaluating a ", message)
 
     # remove redundant certnames
-    redundant_certname = f" on node {certname}"
+    # (escaped, as the certname comes from the agent and it is not a regex)
+    redundant_certname = re.escape(f" on node {certname}")
     message = re.sub(f'{redundant_certname}$', '', message)
 
-    redundant_certname = f" for {certname}"
+    redundant_certname = re.escape(f" for {certname}")
     message = re.sub(f'{redundant_certname} ', ' ', message)
 
     # add extra line breaks for readability
