@@ -274,11 +274,13 @@ Other settings that might be interesting, in no particular order:
 - `UNRESPONSIVE_HOURS`: The amount of hours since the last check-in after which a node is considered unresponsive.
 - `LOGLEVEL`: A string representing the loglevel. It defaults to `'info'` but can be changed to `'warning'` or
     `'critical'` for less verbose logging or `'debug'` for more information.
-- `ENABLE_QUERY`: Defaults to `True` causing a Query tab to show up in the web interface allowing users to write
-    and execute arbitrary queries against a set of endpoints in PuppetDB. Change this to `False` to disable this.
-    See `ENABLED_QUERY_ENDPOINTS` to fine-tune which endpoints are allowed.
+- `ENABLE_QUERY`: If set to `True` a Query tab shows up in the web interface allowing users to write
+    and execute arbitrary queries against a set of endpoints in PuppetDB. This gives every Puppetboard user read
+    access to all the data in PuppetDB, including resource parameters in catalogs, so only enable it behind
+    authentication. Defaults to `False`. See `ENABLED_QUERY_ENDPOINTS` to fine-tune which endpoints are allowed.
 - `ENABLED_QUERY_ENDPOINTS`: If `ENABLE_QUERY` is `True`, allow to fine tune the endpoints of PuppetDB APIs that
     can be queried. It must be a list of strings of PuppetDB endpoints for which the query is enabled.
+    Note that `pql` can query all the other endpoints.
     See the `QUERY_ENDPOINTS` constant in the `puppetboard.app` module for a list of the available endpoints.
 - `GRAPH_TYPE`: Specify the type of graph to display.   Default is
     pie, other good option is donut.   Other choices can be found here:

@@ -322,6 +322,9 @@ raw_env = ['PUPPETBOARD_SETTINGS=/var/www/puppetboard/settings.py', 'http_proxy=
 
 # Security
 
+Puppetboard has no authentication or access control of its own. Everyone who can reach it can see all the
+nodes, facts and reports in PuppetDB. If you enable `ENABLE_QUERY` they can also read all the other data in PuppetDB.
+
 If you wish to make users authenticate before getting access to Puppetboard you can use one of the following configuration snippets.
 
 ## Apache

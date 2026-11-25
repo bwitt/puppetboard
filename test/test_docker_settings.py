@@ -242,3 +242,13 @@ def test_scheduler_jobs_custom(cleanup_env):
         assert 'trigger' in job
         assert 'seconds' in job
         assert 600 == job['seconds']
+
+
+def test_enable_query_default(cleanup_env):
+    assert docker_settings.ENABLE_QUERY is False
+
+
+def test_enable_query(cleanup_env):
+    os.environ['ENABLE_QUERY'] = 'true'
+    reload(docker_settings)
+    assert docker_settings.ENABLE_QUERY is True

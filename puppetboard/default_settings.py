@@ -11,7 +11,7 @@ DEFAULT_ENVIRONMENT = 'production'
 # this empty string has to be changed, we validate it with check_secret_key()
 SECRET_KEY = ''  # nosec
 UNRESPONSIVE_HOURS = 2
-ENABLE_QUERY = True
+ENABLE_QUERY = False
 # Uncomment to restrict the enabled PuppetDB endpoints in the query page.
 # ENABLED_QUERY_ENDPOINTS = ['facts', 'nodes']
 # Path to YAML file containing preset queries (None to disable)

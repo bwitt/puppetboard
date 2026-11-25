@@ -1,11 +1,29 @@
 import tempfile
 import os
 
+import pytest
 from bs4 import BeautifulSoup
 from requests.exceptions import HTTPError
 
 from puppetboard import app
 from test import MockHTTPResponse
+
+
+@pytest.fixture(autouse=True)
+def enable_query():
+    enable_query = app.app.config['ENABLE_QUERY']
+    app.app.config['ENABLE_QUERY'] = True
+    yield
+    app.app.config['ENABLE_QUERY'] = enable_query
+
+
+def test_query_disabled(client, mocker,
+                        mock_puppetdb_environments,
+                        mock_puppetdb_default_nodes):
+    app.app.config['ENABLE_QUERY'] = False
+
+    rv = client.get('/query')
+    assert rv.status_code == 403
 
 
 def test_query_view(client, mocker,
