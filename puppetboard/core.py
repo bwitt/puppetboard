@@ -54,9 +54,11 @@ def get_app():
         app.jinja_env.globals['url_for_field'] = url_for_field
         app.jinja_env.globals['quote_columns_data'] = quote_columns_data
         app.jinja_env.add_extension('jinja2.ext.do')
-        # Trust one level of proxy headers (e.g. X-Forwarded-Proto from Traefik)
-        # so Flask generates correct https:// URLs and doesn't issue http:// redirects
-        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+        # Trust only the X-Forwarded-* headers set by the reverse proxy,
+        # so Flask generates correct URLs, f.e. https:// ones behind Traefik
+        proxy_fix = {'x_for': 0, 'x_proto': 0, 'x_host': 0, 'x_port': 0, 'x_prefix': 0,
+                     **app.config['PROXY_FIX']}
+        app.wsgi_app = ProxyFix(app.wsgi_app, **proxy_fix)
         APP = app
 
     return APP

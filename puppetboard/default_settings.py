@@ -27,6 +27,9 @@ DISPLAYED_METRICS = ['resources.total',
                      'resources.skipped',
                      'events.noop']
 OFFLINE_MODE = False
+# Number of reverse proxies to trust for each X-Forwarded-* header, f.e.
+# {'x_proto': 1, 'x_host': 1, 'x_prefix': 1}. Headers not listed are ignored.
+PROXY_FIX = {'x_proto': 1}
 ENABLE_CATALOG = False
 OVERVIEW_FILTER = None
 PAGE_TITLE = "Puppetboard"

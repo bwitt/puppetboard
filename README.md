@@ -297,6 +297,10 @@ Other settings that might be interesting, in no particular order:
 - `REPORTS_COUNT`: Defaults to `10` the limit of the number of reports to load on the node or any reports page.
 - `OFFLINE_MODE`: If set to `True` load static assets (jquery, semantic-ui, etc) from the local web server instead
     of a CDN. Defaults to `False`.
+- `PROXY_FIX`: The number of reverse proxies to trust for each `X-Forwarded-*` header, passed to Werkzeug's
+    [ProxyFix](https://werkzeug.palletsprojects.com/en/stable/middleware/proxy_fix/). Headers that are not listed
+    are ignored. Only trust the headers that your proxy sets, as clients can send any of them.
+    Defaults to `{'x_proto': 1}`. For Docker, set it as JSON, f.e. `{"x_proto": 1, "x_host": 1, "x_prefix": 1}`.
 - `DAILY_REPORTS_CHART_ENABLED`: Enable the use of daily chart graphs when looking at dashboard and node view.
 - `DAILY_REPORTS_CHART_DAYS`: Number of days to show history for on the daily report graphs.
 - `DAILY_REPORTS_CHART_MODE`: Default layout of the daily report graphs, `'stacked'` or `'split'`.

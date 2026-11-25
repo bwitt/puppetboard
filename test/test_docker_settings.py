@@ -242,3 +242,13 @@ def test_scheduler_jobs_custom(cleanup_env):
         assert 'trigger' in job
         assert 'seconds' in job
         assert 600 == job['seconds']
+
+
+def test_proxy_fix_default(cleanup_env):
+    assert docker_settings.PROXY_FIX == {'x_proto': 1}
+
+
+def test_proxy_fix_json(cleanup_env):
+    os.environ['PROXY_FIX'] = '{"x_proto": 1, "x_host": 1, "x_prefix": 1}'
+    reload(docker_settings)
+    assert docker_settings.PROXY_FIX == {'x_proto': 1, 'x_host': 1, 'x_prefix': 1}

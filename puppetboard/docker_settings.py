@@ -85,6 +85,7 @@ DISPLAYED_METRICS = [x.strip() for x in os.getenv('DISPLAYED_METRICS',
                                                   DISP_METR_DEF).split(',')]
 
 OFFLINE_MODE = coerce_bool(os.getenv('OFFLINE_MODE'), False)
+PROXY_FIX = json.loads(os.getenv('PROXY_FIX', '{"x_proto": 1}'))
 ENABLE_CATALOG = coerce_bool(os.getenv('ENABLE_CATALOG'), False)
 OVERVIEW_FILTER = os.getenv('OVERVIEW_FILTER', None)
 PAGE_TITLE = os.getenv('PAGE_TITLE', 'Puppetboard')
