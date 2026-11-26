@@ -1521,6 +1521,18 @@ files = [
 six = ">=1.5"
 
 [[package]]
+name = "python-memcached"
+version = "1.62"
+description = "Pure python memcached client"
+optional = false
+python-versions = "*"
+groups = ["docker"]
+files = [
+    {file = "python-memcached-1.62.tar.gz", hash = "sha256:0285470599b7f593fbf3bec084daa1f483221e68c1db2cf1d846a9f7c2655103"},
+    {file = "python_memcached-1.62-py2.py3-none-any.whl", hash = "sha256:1bdd8d2393ff53e80cd5e9442d750e658e0b35c3eebb3211af137303e3b729d1"},
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.3"
 description = "YAML parser and emitter for Python"
@@ -1852,4 +1864,4 @@ type = ["pytest-mypy (>=1.0.1) ; platform_python_implementation != \"PyPy\""]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "0689a5bbde08c9dc041b9dd09bdcfe54e9b2f2b52db87218bc744cd1e1431772"
+content-hash = "f0599e21a6367132398a2c5b828648bfc47d11f410037f56a1a21adf78685ccc"
