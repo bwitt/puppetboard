@@ -28,7 +28,7 @@ See [more screenshots here](#more-screenshots).
 
 * PuppetDB v. 5.2-8.*
   * (**Note**: PuppetDB 8.1.0 is not supported because of [this bug](https://github.com/puppetlabs/puppetdb/issues/3866). Please update to 8.1.1+.)
-* Python 3.12-3.14 or Docker
+* Python 3.12-3.15 or Docker
 
 ## Installation<a id="installation"></a>
 
